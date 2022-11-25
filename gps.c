@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define NAME_LEN 100
+#define ADDRESS_LEN 200
 
 /**
  * A Struct that hold almost everything needed for traking a user.
@@ -27,29 +29,61 @@ typedef struct distToUser
 user_t scan_user(double, double, double, double, char *);
 void getOur_user(user_t *);
 void getInputAdress(char *);
+int getNumberOtherUsers(char[]);
 
 int main(void)
 {
 
     user_t our_user;
+    int numOtherUser; // the number of other users
     user_t other_users[2];
-    char inputFileAddress[100] = {'\0'}; // set the adress to delimeters
+    char inputFileAddress[ADDRESS_LEN] = {'\0'}; // set the adress to delimeters
 
     printf("Welcome to the GPS position calculator\n");
 
     // get the data for our_user
     getOur_user(&our_user);
 
+    // get the address of the file that has the other user data in it
     getInputAdress(inputFileAddress);
-    printf("Address: %s\n", inputFileAddress);
+
+    // open and read the file. Populate the number of of users in the file
+    numOtherUser = getNumberOtherUsers(inputFileAddress);
 
     return 0;
 }
 
+int getNumberOtherUsers(char address[ADDRESS_LEN]) // "Other Users/sample_users.txt"
+{
+    // make the file pointer
+    FILE *dataFile = NULL;
+
+    // try to open the file
+    dataFile = fopen(address, "r");
+
+    // check if it worked
+    if (dataFile == NULL)
+    {
+        printf("FAILED\n");
+    }
+    else
+    {
+        printf("SUCCESS\n");
+    }
+
+    fclose(dataFile);
+}
+
+/**
+ * Collect an file path from the user
+ */
 void getInputAdress(char *returnString)
 {
     printf("\nPlease enter the file path of the file containing the other users:\n");
-    scanf("%s", returnString);
+    fgets(returnString, ADDRESS_LEN, stdin);
+
+    // take the linefeed off the end of the string
+    returnString[strlen(returnString) - 1] = '\0';
 }
 
 /**

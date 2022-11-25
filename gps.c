@@ -35,14 +35,13 @@ int main(void)
 {
 
     user_t our_user;
-    int numOtherUser; // the number of other users
-    user_t other_users[2];
+    int numOtherUser;                            // the number of other users
     char inputFileAddress[ADDRESS_LEN] = {'\0'}; // set the adress to delimeters
 
     printf("Welcome to the GPS position calculator\n");
 
     // get the data for our_user
-    getOur_user(&our_user);
+    // getOur_user(&our_user);
 
     // get the address of the file that has the other user data in it
     getInputAdress(inputFileAddress);
@@ -50,13 +49,17 @@ int main(void)
     // open and read the file. Populate the number of of users in the file
     numOtherUser = getNumberOtherUsers(inputFileAddress);
 
+    // setup the array for the other users
+    user_t other_users[numOtherUser];
+
     return 0;
 }
 
-int getNumberOtherUsers(char address[ADDRESS_LEN]) // "Other Users/sample_users.txt"
+void populateOtherUsers(char address[ADDRESS_LEN])
 {
     // make the file pointer
     FILE *dataFile = NULL;
+    char fromFile;
 
     // try to open the file
     dataFile = fopen(address, "r");
@@ -64,14 +67,54 @@ int getNumberOtherUsers(char address[ADDRESS_LEN]) // "Other Users/sample_users.
     // check if it worked
     if (dataFile == NULL)
     {
-        printf("FAILED\n");
+        printf("\nERROR: FAILED to open the specified file while populating the array of other users\n");
     }
     else
     {
-        printf("SUCCESS\n");
+        // fromFile = fgetc(dataFile); // grab the first char
     }
 
     fclose(dataFile);
+}
+
+int getNumberOtherUsers(char address[ADDRESS_LEN]) // "Other Users/sample_users.txt"
+{
+    // make the file pointer
+    FILE *dataFile = NULL;
+    char fromFile;
+    int numUser = -1;
+
+    // try to open the file
+    dataFile = fopen(address, "r");
+
+    // check if it worked
+    if (dataFile == NULL)
+    {
+        printf("\nERROR: FAILED to open the specified file while counting the number of users\n");
+    }
+    else
+    {
+        numUser = 0;                // reset to 0 now that we file confimed to work
+        fromFile = fgetc(dataFile); // grab the first char
+
+        // loop until the end of the first line
+        while ((fromFile > 47 && fromFile < 58))
+        {
+            // sum it
+            numUser += (fromFile - '0');
+
+            fromFile = fgetc(dataFile); // update the char for the next iteration
+            // shift over the decimal for the next iteration
+            numUser *= 10;
+        }
+
+        // shift the decimal back once
+        numUser /= 10;
+    }
+
+    fclose(dataFile);
+
+    return numUser;
 }
 
 /**

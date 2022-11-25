@@ -26,21 +26,30 @@ typedef struct distToUser
 
 user_t scan_user(double, double, double, double, char *);
 void getOur_user(user_t *);
+void getInputAdress(char *);
 
 int main(void)
 {
 
     user_t our_user;
     user_t other_users[2];
+    char inputFileAddress[100] = {'\0'}; // set the adress to delimeters
 
     printf("Welcome to the GPS position calculator\n");
 
     // get the data for our_user
     getOur_user(&our_user);
 
-    printf("Second Hi %s! Your position is (%lf, %lf, %lf) at %lf nanoseconds.\n", our_user.name, our_user.latitude, our_user.longitude, our_user.altitude, our_user.time);
+    getInputAdress(inputFileAddress);
+    printf("Address: %s\n", inputFileAddress);
 
     return 0;
+}
+
+void getInputAdress(char *returnString)
+{
+    printf("\nPlease enter the file path of the file containing the other users:\n");
+    scanf("%s", returnString);
 }
 
 /**

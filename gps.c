@@ -33,11 +33,12 @@ void getInputAdress(char *);
 int getNumberOtherUsers(char[]);
 void populateOtherUsers(char[], int, user_t[]);
 void calcDistances(user_t, int, user_t[], distToUser_t[]);
+user_t findCloseest(int, user_t[], distToUser_t[]);
 
 int main(void)
 {
 
-    user_t our_user;
+    user_t our_user, theClosestUser;
     int numOtherUser;                            // the number of other users
     char inputFileAddress[ADDRESS_LEN] = {'\0'}; // set the adress to delimeters
 
@@ -68,7 +69,35 @@ int main(void)
     // get the distances
     calcDistances(our_user, numOtherUser, other_users, other_user_dists);
 
+    // get the closest
+    theClosestUser = findCloseest(numOtherUser, other_users, other_user_dists);
+
+    printf("\nThe name of the closest user is: %s", theClosestUser.name);
+    printf("\nAnd they are located at the folowing position in the form (latitude, longitude, altitude): (%0.2lf, %0.2lf, %0.2lf)\n", theClosestUser.latitude, theClosestUser.longitude, theClosestUser.altitude);
+
     return 0;
+}
+
+/**
+ * Loop through the distances of the other users and find the lowest, and return its counterpart from the other_users array.
+ */
+user_t findCloseest(int numOtherUsers, user_t otherUsers[numOtherUsers], distToUser_t other_user_dists[numOtherUsers])
+{
+    int indexOfClosest = 0; // guess the closest is at index 0;
+
+    // loop through all the other users and check if there is a closer one
+    for (int i = 0; i < numOtherUsers; i++)
+    {
+        // check if the current user is less than the current lowest
+        if (other_user_dists[i].dist < other_user_dists[indexOfClosest].dist)
+        {
+            // overwite the old index of the closes with the current since it is lower.
+            indexOfClosest = i;
+        }
+    }
+
+    // return the closest
+    return otherUsers[indexOfClosest];
 }
 
 /**

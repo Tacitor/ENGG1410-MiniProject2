@@ -30,6 +30,7 @@ user_t scan_user(double, double, double, double, char *);
 void getOur_user(user_t *);
 void getInputAdress(char *);
 int getNumberOtherUsers(char[]);
+void populateOtherUsers(char address[ADDRESS_LEN], int, user_t[]);
 
 int main(void)
 {
@@ -52,14 +53,31 @@ int main(void)
     // setup the array for the other users
     user_t other_users[numOtherUser];
 
+    populateOtherUsers(inputFileAddress, numOtherUser, other_users);
+
+    // debug and print off the users
+    // for (int i = 0; i < numOtherUser; i++)
+    // {
+    //     printf("\nName: %s\nTime: %.0lf\nLat: %lg\nLong: %lg\nAlt: %lg\n", other_users[i].name, other_users[i].time, other_users[i].latitude, other_users[i].longitude, other_users[i].altitude);
+    // }
+
+    // get the distances
+
     return 0;
 }
 
-void populateOtherUsers(char address[ADDRESS_LEN])
+/**
+ * Loop through a formatted data file that contains data entries for the GPS data of multiple other users.
+ */
+void populateOtherUsers(char address[ADDRESS_LEN], int numUsers, user_t other_users[numUsers])
 {
     // make the file pointer
     FILE *dataFile = NULL;
-    char fromFile;
+    char fromFile_s[NAME_LEN]; // give it the max name length just in case
+
+    // vars used in populating the array and making the structs
+    char name[NAME_LEN];
+    double time, lat, lon, alt;
 
     // try to open the file
     dataFile = fopen(address, "r");
@@ -71,12 +89,34 @@ void populateOtherUsers(char address[ADDRESS_LEN])
     }
     else
     {
-        // fromFile = fgetc(dataFile); // grab the first char
+        // skip the first line
+        fscanf(dataFile, "%*s");
+
+        // loop through as many times as there are other users
+        for (int i = 0; i < numUsers; i++)
+        {
+            // read the name
+            fscanf(dataFile, "%s", name);
+            // read the time
+            fscanf(dataFile, "%lf", &time);
+            // read the latitude
+            fscanf(dataFile, "%lf", &lat);
+            // read the longitude
+            fscanf(dataFile, "%lf", &lon);
+            // read the altitude
+            fscanf(dataFile, "%lf", &alt);
+
+            // add it to the other_users array
+            other_users[i] = scan_user(lat, lon, alt, time, name);
+        }
     }
 
     fclose(dataFile);
 }
 
+/**
+ * Read the first line of a data file. This first line contains the number of entries following. Return said number.
+ */
 int getNumberOtherUsers(char address[ADDRESS_LEN]) // "Other Users/sample_users.txt"
 {
     // make the file pointer

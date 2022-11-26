@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define NAME_LEN 100
 #define ADDRESS_LEN 200
@@ -30,7 +31,8 @@ user_t scan_user(double, double, double, double, char *);
 void getOur_user(user_t *);
 void getInputAdress(char *);
 int getNumberOtherUsers(char[]);
-void populateOtherUsers(char address[ADDRESS_LEN], int, user_t[]);
+void populateOtherUsers(char[], int, user_t[]);
+void calcDistances(user_t, int, user_t[], distToUser_t[]);
 
 int main(void)
 {
@@ -41,17 +43,19 @@ int main(void)
 
     printf("Welcome to the GPS position calculator\n");
 
-    // get the data for our_user
-    // getOur_user(&our_user);
-
     // get the address of the file that has the other user data in it
     getInputAdress(inputFileAddress);
+
+    // get the data for our_user
+    getOur_user(&our_user);
 
     // open and read the file. Populate the number of of users in the file
     numOtherUser = getNumberOtherUsers(inputFileAddress);
 
     // setup the array for the other users
     user_t other_users[numOtherUser];
+    // the array for the distances
+    distToUser_t other_user_dists[numOtherUser];
 
     populateOtherUsers(inputFileAddress, numOtherUser, other_users);
 
@@ -62,8 +66,27 @@ int main(void)
     // }
 
     // get the distances
+    calcDistances(our_user, numOtherUser, other_users, other_user_dists);
 
     return 0;
+}
+
+/**
+ * Loop through the given array of structs, extract the position data and calculates the distance to out_user. Then is stores this distance in a new array of structs.
+ */
+void calcDistances(user_t our_user, int numOtherUsers, user_t otherUsers[numOtherUsers], distToUser_t other_user_dists[numOtherUsers])
+{
+    // local copies of the positions
+    double lat = our_user.latitude, lon = our_user.longitude, alt = our_user.altitude;
+
+    // loop through
+    for (int i = 0; i < numOtherUsers; i++)
+    {
+        // calc the distance and save it
+        other_user_dists[i].dist = sqrt(pow((lat - otherUsers[i].latitude), 2) + pow((lon - otherUsers[i].longitude), 2) + pow((alt - otherUsers[i].altitude), 2));
+        // populate the name while we are here
+        strcpy(other_user_dists[i].name, otherUsers[i].name);
+    }
 }
 
 /**

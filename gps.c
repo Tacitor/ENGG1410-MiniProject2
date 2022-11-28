@@ -252,3 +252,6 @@ user_t scan_user(double lat, double lon, double alt, double time, char *name)
 
     return returnUser;
 }
+
+//Test File Path:
+//"Other Users/sample_users.txt"

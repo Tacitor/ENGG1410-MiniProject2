@@ -1,0 +1,51 @@
+function main:
+declare our_user
+declare theClosestUser
+declare numOtherUser
+initialise inputFileAddress to empty string
+
+print welcome message
+scan inputFileAddress as the relative path to the data file
+scan name of our_user
+scan latitude of our_user
+scan longitude of our_user
+scan altitude of our_user
+scan time of our_user
+
+initialise numOtherUser to call of getNumberOtherUsers()
+
+initialise other_users to array of size numOtherUser
+initialise other_user_dists to array of size numOtherUser
+
+call populateOtherUsers()
+
+call calcDistances()
+
+initialise theClosestUser to call of findClosest()
+
+output the theClosestUser
+
+
+function getNumberOtherUsers():
+open file at inputFileAddress
+return first line of file
+
+function populateOtherUsers():
+skip the first line of the file at inputFileAddress
+loop numOtherUser times
+    read in the name
+    read in the time
+    read in the latitude
+    read in the longitude
+    read in the altitude
+    create new struct of type user_t using name, time, latitude, longitude, altitude
+    add the new user_t to the array of other_users
+
+function calcDistances():
+loop numOtherUser times
+    calculate the distance to our_user and store in in the array of other_user_dists
+
+function findClosest():
+loop numOtherUser times
+    find the shortest distance
+return the struct from other_users that has the shortest distance
